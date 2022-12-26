@@ -5,6 +5,7 @@ const guessContainer = document.querySelector('.guess-container')
 const firstGuessNode = document.querySelector('.guess')
 const keyboardKeys = document.querySelectorAll('.keyboard-key')
 const toggleKeys = document.querySelectorAll('.keyboard-key[data-special="toggle"]')
+const modals = document.querySelectorAll('.modal')
 
 const toggleMap = {
     1: {},
@@ -14,6 +15,8 @@ const toggled = {
     1: false,
     2: false
 }
+
+let gameOver = false
 
 let guessNodes = [firstGuessNode]
 let activeGuessIndex = 0
@@ -36,6 +39,9 @@ function init() {
     // Setup keydown listener
     initKeyDown()
 
+    // Setup modal windows
+    initModals()
+
     loadWordList()
 
 }
@@ -55,7 +61,6 @@ function initUIKeyboard() {
         }
         if (keyboardLetter.dataset.toggle) {
             const key = keyboardLetter.dataset.toggleKey
-            console.log(key)
             const toggleLetter = keyboardLetter.dataset.toggle
             toggleMap[key][toggleLetter] = keyboardLetter
         }
@@ -80,13 +85,14 @@ function initUIKeyboard() {
             writeLetter(keyboardLetter.textContent)
         })
     })
-
-    console.log(toggleMap)
 }
 
 function initKeyDown() {
     document.addEventListener('keydown', e => {
-        if (e.key === 'Backspace') {
+        if (e.key === 'Escape') {
+            closeAllModals()
+        }
+        else if (e.key === 'Backspace') {
             eraseLetter()
         }
         else if (e.key === 'Enter') {
@@ -100,6 +106,22 @@ function initKeyDown() {
         else if (e.key.match(/^[a-z]|[^\x00-\x7F]$/)) {
             writeLetter(e.key.toUpperCase())
         }
+    })
+}
+
+function initModals() {
+    modals.forEach((modal) => {
+        modal.addEventListener('click', (e) => {
+            if (modal.dataset.opened == 1) {
+                toggleModal(modal.dataset.modal)
+            }
+        })
+    })
+}
+
+function closeAllModals() {
+    modals.forEach((modal) => {
+        modal.dataset.opened = 0
     })
 }
 
@@ -124,6 +146,13 @@ function pickWordOfTheDay() {
     console.log(wordOfTheDay)
 }
 
+function toggleModal(key) {
+    const modal = document.querySelector(`.modal[data-modal="${key}"]`)
+    if (modal) {
+        modal.dataset.opened = modal.dataset.opened == 0 ? 1 : 0
+    }
+}
+
 function nextGuess() {
     activeGuessIndex++
     activeLetterIndex = 0
@@ -133,8 +162,8 @@ function nextGuess() {
 }
 
 function writeLetter(letter) {
-    // All letters filled
-    if (activeLetterIndex === LETTER_COUNT) {
+    // Game over or all letters filled
+    if (gameOver || activeLetterIndex === LETTER_COUNT) {
         return
     }
 
@@ -154,8 +183,8 @@ function writeLetter(letter) {
 }
 
 function eraseLetter() {
-    // No letters filled
-    if (activeLetterIndex === 0) {
+    // Game over or no letters filled
+    if (gameOver || activeLetterIndex === 0) {
         return
     }
 
@@ -168,6 +197,11 @@ function eraseLetter() {
 }
 
 function toggleLetters(key) {
+    // Game over
+    if (gameOver) {
+        return
+    }
+
     toggleKeys.forEach((k) => {
         if (k.dataset.toggleKey == key) {
             k.classList.toggle('toggled')
@@ -180,8 +214,8 @@ function toggleLetters(key) {
 }
 
 function makeGuess() {
-    if (guessWord.length !== LETTER_COUNT) {
-        alert('Nebylo vyplněno 6 písmen!')
+    // Game over
+    if (gameOver) {
         return
     }
 
@@ -190,7 +224,7 @@ function makeGuess() {
     activeGuess.classList.remove('shake-animation')
     void activeGuess.offsetWidth
 
-    if (!wordList.includes(guessWord)) {
+    if (guessWord.length !== LETTER_COUNT || !wordList.includes(guessWord)) {
         activeGuess.classList.add('shake-animation')
         return
     }
@@ -202,6 +236,8 @@ function makeGuess() {
 
 function evaluateGuess() {
     let letterIndex = -1
+    let correctLetters = 0
+
     activeGuessLetters.forEach((guessLetter) => {
         letterIndex++
 
@@ -225,7 +261,18 @@ function evaluateGuess() {
 
         // Correct letter, correct place
         guessLetter.classList.add('correct')
+        correctLetters++
     })
+
+    if (correctLetters === LETTER_COUNT) {
+        finishGame(true)
+    }
+}
+
+function finishGame(win) {
+    gameOver = true
+    
+    toggleModal('game-over')
 }
 
 
