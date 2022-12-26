@@ -13,6 +13,10 @@ section {
     margin: 2% 10%;
 }
 
+.hidden {
+    display: none !important;
+}
+
 #main-header {
     width: 100%;
     height: 8vh;
@@ -67,7 +71,7 @@ section {
 }
 
 .guess-letter.filled {
-    border: 1px solid #808080;
+    outline: 1px solid #808080;
     animation-name: bounce-animation;
     animation-duration: 0.3s; 
     animation-fill-mode: both;
@@ -111,7 +115,7 @@ section {
     margin-right: 10px;
 }
 
-.keyboard-letter {
+.keyboard-key {
     border: 1px solid #808080;
     background-color: #505050;
     font-size: 1.2rem;
@@ -119,19 +123,23 @@ section {
     transition: background-color ease 0.2s;
 }
 
-.keyboard-letter:hover {
+.keyboard-key:hover {
     background-color: #808080;
 }
 
-.keyboard-letter.incorrect {
+.keyboard-key.toggled {
+    outline: 1px solid #fff;
+}
+
+.keyboard-key.incorrect {
     background-color: #303030;
 }
 
-.keyboard-letter.enter, .keyboard-letter.backspace {
+.keyboard-key.enter, .keyboard-key.backspace {
     width: 80px;
 }
 
-.keyboard-letter.backspace img {
+.keyboard-key.backspace img {
     width: 40%;
 }
 

@@ -3,7 +3,17 @@ const GUESS_COUNT = 6
 
 const guessContainer = document.querySelector('.guess-container')
 const firstGuessNode = document.querySelector('.guess')
-const keyboardLetters = document.querySelectorAll('.keyboard-letter')
+const keyboardKeys = document.querySelectorAll('.keyboard-key')
+const toggleKeys = document.querySelectorAll('.keyboard-key[data-special="toggle"]')
+
+const toggleMap = {
+    1: {},
+    2: {}
+}
+const toggled = {
+    1: false,
+    2: false
+}
 
 let guessNodes = [firstGuessNode]
 let activeGuessIndex = 0
@@ -18,33 +28,63 @@ let wordOfTheDay
 
 function init() {
     // Create guess containers
+    initGuessContainers()
+
+    // Setup UI keyboard click listeners
+    initUIKeyboard()
+
+    // Setup keydown listener
+    initKeyDown()
+
+    loadWordList()
+
+}
+
+function initGuessContainers() {
     for (let i = 1; i < GUESS_COUNT; i++) {
         let guessNodeClone = firstGuessNode.cloneNode(true)
         guessNodes.push(guessNodeClone)
         guessContainer.appendChild(guessNodeClone)
     }
+}
 
-    // Setup UI keyboard click listeners
-    keyboardLetters.forEach(keyboardLetter => {
-        if (keyboardLetter.textContent.length === 1) {
+function initUIKeyboard() {
+    keyboardKeys.forEach((keyboardLetter) => {
+        if (!keyboardLetter.dataset.special) {
             keyboardLetter.dataset.letter = keyboardLetter.textContent
         }
-    
+        if (keyboardLetter.dataset.toggle) {
+            const key = keyboardLetter.dataset.toggleKey
+            console.log(key)
+            const toggleLetter = keyboardLetter.dataset.toggle
+            toggleMap[key][toggleLetter] = keyboardLetter
+        }
+
         keyboardLetter.addEventListener('click', () => {
-            if (keyboardLetter.classList.contains('backspace')) {
-                eraseLetter()
-                return
-            }
-            if (keyboardLetter.classList.contains('enter')) {
-                makeGuess()
-                return
+            if (keyboardLetter.dataset.special) {
+                switch (keyboardLetter.dataset.special) {
+                    case 'backspace':
+                        eraseLetter()
+                        return
+                    case 'enter':
+                        makeGuess()
+                        return
+                    case 'toggle':
+                        toggleLetters(keyboardLetter.dataset.toggleKey)
+                        return
+                    default:
+                        return
+                }
             }
 
             writeLetter(keyboardLetter.textContent)
         })
     })
 
-    // Setup keydown listener
+    console.log(toggleMap)
+}
+
+function initKeyDown() {
     document.addEventListener('keydown', e => {
         if (e.key === 'Backspace') {
             eraseLetter()
@@ -52,14 +92,15 @@ function init() {
         else if (e.key === 'Enter') {
             makeGuess()
         }
+        else if (e.key === 'Dead') {
+            const key = e.shiftKey ? 1 : 2
+            toggleLetters(key)
+        }
         // Matches only letters and non-ascii characters
         else if (e.key.match(/^[a-z]|[^\x00-\x7F]$/)) {
             writeLetter(e.key.toUpperCase())
         }
     })
-
-    loadWordList()
-
 }
 
 function loadWordList() {
@@ -97,6 +138,13 @@ function writeLetter(letter) {
         return
     }
 
+    // Untoggle toggled letters
+    for (const key in toggled) {
+        if (toggled[key]) {
+            toggleLetters(key)
+        }
+    }
+
     let activeLetter = activeGuessLetters[activeLetterIndex]
     activeLetter.textContent = letter
     activeLetter.classList.add('filled')
@@ -117,6 +165,18 @@ function eraseLetter() {
 
     guessWord = guessWord.slice(0, -1)
     activeLetterIndex -= 1
+}
+
+function toggleLetters(key) {
+    toggleKeys.forEach((k) => {
+        if (k.dataset.toggleKey == key) {
+            k.classList.toggle('toggled')
+        }
+    })
+    toggled[key] = !toggled[key]
+    for(const letter in toggleMap[key]) {
+        toggleMap[key][letter].classList.toggle('hidden')
+    }
 }
 
 function makeGuess() {
@@ -142,16 +202,18 @@ function makeGuess() {
 
 function evaluateGuess() {
     let letterIndex = -1
-    activeGuessLetters.forEach(guessLetter => {
+    activeGuessLetters.forEach((guessLetter) => {
         letterIndex++
 
         let letter = guessLetter.textContent.toLowerCase()
 
         // Incorrect letter
         if (!wordOfTheDay.includes(letter)) {
-            let keyboardLetter = document.querySelector('.keyboard-letter[data-letter="' + letter.toUpperCase() + '"]')
+            let keyboardLetters = document.querySelectorAll(`.keyboard-key[data-letter="${letter.toUpperCase()}"]`)
+            keyboardLetters.forEach((letter) => {
+                letter.classList.add('incorrect')
+            })
             guessLetter.classList.add('incorrect')
-            keyboardLetter.classList.add('incorrect')
             return
         }
 
@@ -167,4 +229,5 @@ function evaluateGuess() {
 }
 
 
+// START THE APP
 init()
