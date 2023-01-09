@@ -14,9 +14,24 @@
     </header>
 
     <section id="game-section">
-        <div class="modal" data-modal="game-over" data-opened="0">
-            <div class="modal-content">
-
+        <div class="modal" data-modal="stats" data-opened="0">
+            <div class="modal-content end-modal">
+                <span class="end-modal-title">DOBRÁ PRÁCE!</span>
+                <span class="end-modal-subtitle">Dnešní slovo bylo: <span class="end-modal-wordoftheday">LHÁŘKA</span></span>
+                <div class="end-modal-stats">
+                    <div class="end-modal-stats-item">
+                        <span class="end-modal-stats-item-title">Série úspěšných uhodnutí</span>
+                        <span class="end-modal-stats-item-stat" data-stat="streak">X</span>
+                    </div>
+                    <div class="end-modal-stats-item">
+                        <span class="end-modal-stats-item-title">Dnešní počet pokusů</span>
+                        <span class="end-modal-stats-item-stat" data-stat="guess-today">X</span>
+                    </div>
+                    <div class="end-modal-stats-item">
+                        <span class="end-modal-stats-item-title">Průměrný počet pokusů</span>
+                        <span class="end-modal-stats-item-stat" data-stat="guess-average">X</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -35,21 +50,10 @@
             <div class="keyboard">
                 <div class="keyboard-row">
                     <div class="letter keyboard-key" data-special="toggle" data-toggle-key="1">ˇ</div>
-                    <div class="letter keyboard-key">Ě</div>
-                    <div class="letter keyboard-key">Š</div>
-                    <div class="letter keyboard-key">Č</div>
-                    <div class="letter keyboard-key">Ř</div>
-                    <div class="letter keyboard-key">Ž</div>
-                    <div class="letter keyboard-key">Ý</div>
-                    <div class="letter keyboard-key">Á</div>
-                    <div class="letter keyboard-key">Í</div>
-                    <div class="letter keyboard-key">É</div>
-                    <div class="letter keyboard-key" data-special="toggle" data-toggle-key="2">´</div>
-                </div>
-                <div class="keyboard-row">
                     <div class="letter keyboard-key">Q</div>
                     <div class="letter keyboard-key">W</div>
-                    <div class="letter keyboard-key" data-toggle-key="2" data-toggle="É">E</div>
+                    <div class="letter keyboard-key" data-toggle-key="3" data-toggle="ÉĚ">E</div>
+                    <div class="letter keyboard-key hidden" data-toggle-key="1" data-toggle="E">Ě</div>
                     <div class="letter keyboard-key hidden" data-toggle-key="2" data-toggle="E">É</div>
                     <div class="letter keyboard-key" data-toggle-key="1" data-toggle="Ř">R</div>
                     <div class="letter keyboard-key hidden" data-toggle-key="1" data-toggle="R">Ř</div>
@@ -64,7 +68,7 @@
                     <div class="letter keyboard-key" data-toggle-key="2" data-toggle="Ó">O</div>
                     <div class="letter keyboard-key hidden" data-toggle-key="2" data-toggle="O">Ó</div>
                     <div class="letter keyboard-key">P</div>
-                    <div class="letter keyboard-key">Ú</div>
+                    <div class="letter keyboard-key" data-special="toggle" data-toggle-key="2">´</div>
                 </div>
                 <div class="keyboard-row">
                     <div class="letter keyboard-key" data-toggle-key="2" data-toggle="Á">A</div>
@@ -99,6 +103,14 @@
                         <img src="img/backspace.svg">
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="options-section">
+        <div class="options-container">
+            <div class="options-icon" data-options="stats">
+                <img src="img/stats.svg" alt="Statistics">
             </div>
         </div>
     </section>
